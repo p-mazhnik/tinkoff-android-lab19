@@ -67,7 +67,7 @@ public class NewsFragment extends Fragment {
         mNewsPublicationDate = mView.findViewById(R.id.news_creationDate);
 
         mViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
-        mViewModel.getNewsContentById(String.valueOf(this.news_id))
+        mViewModel.getRemoteNewsContentById(String.valueOf(this.news_id))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<NewsItemResponse>() {

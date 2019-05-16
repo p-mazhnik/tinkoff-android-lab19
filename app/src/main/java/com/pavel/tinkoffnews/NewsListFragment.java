@@ -1,6 +1,5 @@
 package com.pavel.tinkoffnews;
 
-import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.annotation.SuppressLint;
@@ -15,18 +14,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.pavel.tinkoffnews.databinding.NewsListFragmentBinding;
+import com.pavel.tinkoffnews.local.entity.NewsEntity;
 import com.pavel.tinkoffnews.remote.data.NewsListResponse;
-import com.pavel.tinkoffnews.remote.data.PublicationDate;
 import com.pavel.tinkoffnews.remote.data.Title;
 import com.pavel.tinkoffnews.viewmodel.NewsViewModel;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -63,23 +60,23 @@ public class NewsListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
-        mViewModel.getNews()
+        load_remote_data();
+        mViewModel.getLocalNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<NewsListResponse>() {
+                .subscribe(new Consumer<List<NewsEntity>>() {
                     @Override
-                    public void accept(NewsListResponse response) throws Exception {
-                        if (response != null && response.getResultCode().equals("OK")) {
-                            List<Title> titles = response.getTitle();
-                            Collections.sort(titles, new Comparator<Title>() {
+                    public void accept(List<NewsEntity> response) throws Exception {
+                        if (response != null && !response.isEmpty()) {
+                            Collections.sort(response, new Comparator<NewsEntity>() {
                                 @Override
-                                public int compare(Title l, Title r) {
-                                    long pb_date_1 = l.getPublicationDate().getMilliseconds();
-                                    long pb_date_2 = r.getPublicationDate().getMilliseconds();
+                                public int compare(NewsEntity l, NewsEntity r) {
+                                    long pb_date_1 = l.getPubDate();
+                                    long pb_date_2 = r.getPubDate();
                                     return Long.compare(pb_date_2, pb_date_1);
                                 }
                             });
-                            mNewsListAdapter.setNewsList(titles);
+                            mNewsListAdapter.setNewsList(response);
                         } else {
                             Log.e("NewsListFragment", "response is null");
                         }
@@ -88,6 +85,36 @@ public class NewsListFragment extends Fragment {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
                         Log.e("NewsListFragment", "exception getting data: " + throwable.getMessage());
+                    }
+                });
+    }
+
+    @SuppressLint("CheckResult")
+    public void load_remote_data(){
+        mViewModel.getRemoteNews()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<NewsListResponse>() {
+                    @Override
+                    public void accept(NewsListResponse response) throws Exception {
+                        if (response != null && response.getResultCode().equals("OK")) {
+                            List<Title> titles = response.getTitle();
+                            List<NewsEntity> news_entity_list = new ArrayList<>();
+                            Iterator<Title> iter = titles.iterator();
+                            while(iter.hasNext()){
+                                NewsEntity newsEntity = new NewsEntity(iter.next());
+                                news_entity_list.add(newsEntity);
+                            }
+
+                            mViewModel.insertNewsList(news_entity_list);
+                        } else {
+                            Log.e("NewsListFragment", "response is null");
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e("NewsListFragment", "exception insert data: " + throwable.getMessage());
                     }
                 });
     }

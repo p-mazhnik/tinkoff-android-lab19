@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.pavel.tinkoffnews.local.entity.NewsEntity;
 import com.pavel.tinkoffnews.remote.data.Title;
 
 import java.util.List;
@@ -21,17 +22,17 @@ import java.util.List;
  */
 public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.MyViewHolder> {
 
-    List<Title> mNewsList;
+    List<NewsEntity> mNewsList;
 
     public NewsListAdapter() {
         setHasStableIds(true);
     }
 
-    public void setNewsList(final List<Title> newsList) {
+    public void setNewsList(final List<NewsEntity> newsList) {
         //if (this.mNewsList == null) {
-            this.mNewsList = newsList;
-            //notifyItemRangeInserted(0, newsList.size());
-            notifyDataSetChanged();
+        this.mNewsList = newsList;
+        //notifyItemRangeInserted(0, newsList.size());
+        notifyDataSetChanged();
         //}
     }
 
@@ -76,7 +77,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.MyView
 
     @Override
     public long getItemId(int position) {
-        return Long.parseLong(mNewsList.get(position).getId());
+        return mNewsList.get(position).getId();
     }
 
     @Override

@@ -5,9 +5,13 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.pavel.tinkoffnews.BasicApp;
+import com.pavel.tinkoffnews.local.LocalRepository;
+import com.pavel.tinkoffnews.local.entity.NewsEntity;
 import com.pavel.tinkoffnews.remote.RemoteRepository;
 import com.pavel.tinkoffnews.remote.data.NewsListResponse;
 import com.pavel.tinkoffnews.remote.data.NewsItemResponse;
+
+import java.util.List;
 
 import io.reactivex.Flowable;
 
@@ -18,17 +22,31 @@ import io.reactivex.Flowable;
 public class NewsViewModel extends AndroidViewModel {
 
     private RemoteRepository mRemoteRepository;
+    private LocalRepository mLocalRepository;
 
     public NewsViewModel(Application application) {
         super(application);
         this.mRemoteRepository = ((BasicApp) application).getRemoteRepository();
+        this.mLocalRepository = ((BasicApp) application).getLocalRepository();
     }
 
-    public Flowable<NewsListResponse> getNews(){
+    public Flowable<NewsListResponse> getRemoteNews(){
         return mRemoteRepository.getNews();
     }
 
-    public Flowable<NewsItemResponse> getNewsContentById(String id){
+    public Flowable<NewsItemResponse> getRemoteNewsContentById(String id){
         return mRemoteRepository.getNewsContentById(id);
+    }
+
+    public Flowable<List<NewsEntity>> getLocalNews(){
+        return mLocalRepository.getAllNews();
+    }
+
+    public void insertNewsList(List<NewsEntity> news_list){
+        mLocalRepository.insertNewsList(news_list);
+    }
+
+    public Flowable<NewsEntity> getLocalNewsContentById(long id){
+        return mLocalRepository.getNewsItemById(id);
     }
 }

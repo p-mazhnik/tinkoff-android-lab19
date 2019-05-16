@@ -2,6 +2,8 @@ package com.pavel.tinkoffnews;
 
 import android.app.Application;
 
+import com.pavel.tinkoffnews.local.AppDatabase;
+import com.pavel.tinkoffnews.local.LocalRepository;
 import com.pavel.tinkoffnews.remote.RemoteRepository;
 import com.pavel.tinkoffnews.remote.TinkoffAPI;
 
@@ -42,5 +44,13 @@ public class BasicApp extends Application {
 
     public RemoteRepository getRemoteRepository() {
         return RemoteRepository.getInstance(getTinkoffAPI());
+    }
+
+    public AppDatabase getDatabase() {
+        return AppDatabase.getInstance(this);
+    }
+
+    public LocalRepository getLocalRepository() {
+        return LocalRepository.getInstance(getDatabase());
     }
 }
