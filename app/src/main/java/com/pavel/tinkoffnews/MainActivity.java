@@ -24,4 +24,17 @@ public class MainActivity extends AppCompatActivity {
     protected Fragment getFragment() {
         return NewsListFragment.newInstance();
     }
+
+    public void startFragmentById(long id) {
+        NewsFragment newsFragment = new NewsFragment();
+        Bundle args = new Bundle();
+        args.putLong(NewsFragment.KEY_NEWS_ID, id);
+        newsFragment.setArguments(args);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragment_container,
+                        newsFragment, null).commit();
+    }
 }

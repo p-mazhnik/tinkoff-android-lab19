@@ -3,6 +3,7 @@ package com.pavel.tinkoffnews;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,8 @@ import com.pavel.tinkoffnews.viewmodel.NewsViewModel;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -57,6 +60,7 @@ public class NewsListFragment extends Fragment {
         return v;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -67,8 +71,16 @@ public class NewsListFragment extends Fragment {
                 .subscribe(new Consumer<NewsListResponse>() {
                     @Override
                     public void accept(NewsListResponse response) throws Exception {
-                        if (response != null) {
+                        if (response != null && response.getResultCode().equals("OK")) {
                             List<Title> titles = response.getTitle();
+                            Collections.sort(titles, new Comparator<Title>() {
+                                @Override
+                                public int compare(Title l, Title r) {
+                                    long pb_date_1 = l.getPublicationDate().getMilliseconds();
+                                    long pb_date_2 = r.getPublicationDate().getMilliseconds();
+                                    return Long.compare(pb_date_2, pb_date_1);
+                                }
+                            });
                             mNewsListAdapter.setNewsList(titles);
                         } else {
                             Log.e("NewsListFragment", "response is null");

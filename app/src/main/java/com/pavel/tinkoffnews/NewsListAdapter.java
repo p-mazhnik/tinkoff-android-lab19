@@ -3,13 +3,13 @@ package com.pavel.tinkoffnews;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.pavel.tinkoffnews.databinding.NewsItemBinding;
 import com.pavel.tinkoffnews.remote.data.Title;
 
 import java.util.List;
@@ -22,9 +22,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.MyView
 
     List<Title> mNewsList;
 
-//    public NewsListAdapter(List<Title> newsList) {
-//        mNewsList = newsList;
-//    }
+    public NewsListAdapter() {
+        setHasStableIds(true);
+    }
 
     public void setNewsList(final List<Title> newsList) {
         //if (this.mNewsList == null) {
@@ -39,9 +39,17 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.MyView
     // you provide access to all the views for a data item in a view holder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
-        public MyViewHolder(View v) {
+
+        public MyViewHolder(View v, final NewsListAdapter adapter) {
             super(v);
-            textView = (TextView) v.findViewById(R.id.name);
+            textView = (TextView) v.findViewById(R.id.text_news_item);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    long news_id = adapter.getItemId(getAdapterPosition());
+                    ((MainActivity) v.getContext()).startFragmentById(news_id);
+                }
+            });
         }
     }
 
@@ -51,7 +59,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.MyView
         // create a new view
         View v = (View) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.news_item, parent, false);
-        MyViewHolder vh = new MyViewHolder(v);
+        MyViewHolder vh = new MyViewHolder(v, this);
         return vh;
     }
 
