@@ -1,5 +1,6 @@
 package com.pavel.tinkoffnews;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull NewsListAdapter.MyViewHolder holder, int position) {
-        holder.textView.setText(mNewsList.get(position).getText());
+        holder.textView.setText(Html.fromHtml(mNewsList.get(position).getText()));
     }
 
     @Override

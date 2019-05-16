@@ -13,18 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.pavel.tinkoffnews.remote.data.NewsItemResponse;
-import com.pavel.tinkoffnews.remote.data.NewsListResponse;
 import com.pavel.tinkoffnews.remote.data.Payload;
-import com.pavel.tinkoffnews.remote.data.Title;
 import com.pavel.tinkoffnews.viewmodel.NewsViewModel;
 
-import java.io.FileReader;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -41,9 +37,9 @@ public class NewsFragment extends Fragment {
     private NewsViewModel mViewModel;
     private NewsListAdapter mNewsListAdapter;
 
-    private TextView news_title;
-    private TextView news_creationDate;
-    private TextView news_content;
+    private TextView mNewsTitle;
+    private TextView mNewsPublicationDate;
+    private TextView mNewsContent;
 
     private View mView;
 
@@ -66,9 +62,9 @@ public class NewsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        news_title = mView.findViewById(R.id.news_title);
-        news_content = mView.findViewById(R.id.news_content);
-        news_creationDate = mView.findViewById(R.id.news_creationDate);
+        mNewsTitle = mView.findViewById(R.id.news_title);
+        mNewsContent = mView.findViewById(R.id.news_content);
+        mNewsPublicationDate = mView.findViewById(R.id.news_creationDate);
 
         mViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
         mViewModel.getNewsContentById(String.valueOf(this.news_id))
@@ -79,9 +75,10 @@ public class NewsFragment extends Fragment {
                     public void accept(NewsItemResponse response) throws Exception {
                         if (response != null && response.getResultCode().equals("OK")) {
                             Payload news_info = response.getPayload();
-                            news_title.setText(news_info.getTitle().getText());
-                            news_content.setText(Html.fromHtml(news_info.getContent()));
-                            news_creationDate.setText(String.valueOf(news_info.getCreationDate().getMilliseconds()));
+                            mNewsTitle.setText(Html.fromHtml(news_info.getTitle().getText()));
+                            mNewsContent.setText(Html.fromHtml(news_info.getContent()));
+                            mNewsPublicationDate.setText(getFormattedDateFromTimestamp(news_info.getTitle()
+                                    .getPublicationDate().getMilliseconds()));
                         } else {
                             Log.e("NewsFragment", "response is null");
                         }
@@ -92,5 +89,12 @@ public class NewsFragment extends Fragment {
                         Log.e("NewsFragment", "exception getting data: " + throwable.getMessage());
                     }
                 });
+    }
+
+    public static String getFormattedDateFromTimestamp(long timestampInMilliSeconds)
+    {
+        Date date = new Date();
+        date.setTime(timestampInMilliSeconds);
+        return new SimpleDateFormat("dd.MM.yyyy", Locale.US).format(date);
     }
 }

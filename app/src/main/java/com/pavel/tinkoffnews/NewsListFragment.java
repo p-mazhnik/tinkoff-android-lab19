@@ -53,8 +53,6 @@ public class NewsListFragment extends Fragment {
         View v = inflater.inflate(R.layout.news_list_fragment, container, false);
 
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.news_list);
-//        List<Title> titles = new ArrayList<Title>();
-//        titles.add(new Title("1", "ff", "ff", new PublicationDate(123), 213));
         mNewsListAdapter = new NewsListAdapter();
         recyclerView.setAdapter(mNewsListAdapter);
         return v;
