@@ -1,6 +1,6 @@
 package com.pavel.tinkoffnews.local;
 
-import com.pavel.tinkoffnews.local.entity.NewsEntity;
+import com.pavel.tinkoffnews.model.Title;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -18,11 +18,11 @@ public class LocalRepository {
     private AppDatabase mDatabase;
     private final Executor mExecutor = Executors.newFixedThreadPool(2);
 
-    public Flowable<List<NewsEntity>> getAllNews(){
+    public Flowable<List<Title>> getAllNews(){
         return mDatabase.mNewsDao().getAllNews();
     }
 
-    public void insertNewsList(final List<NewsEntity> news_list){
+    public void insertNewsList(final List<Title> news_list){
         mExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -31,7 +31,7 @@ public class LocalRepository {
         });
     }
 
-    public Flowable<NewsEntity> getNewsItemById(long id){
+    public Flowable<Title> getNewsItemById(long id){
         return mDatabase.mNewsDao().getNewsItemById(id);
     }
 

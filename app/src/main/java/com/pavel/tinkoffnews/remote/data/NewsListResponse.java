@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.pavel.tinkoffnews.model.Title;
 
 /**
  * Created by p.mazhnik on 15.05.2019.

@@ -3,6 +3,7 @@ package com.pavel.tinkoffnews.remote.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.pavel.tinkoffnews.model.Title;
 
 /**
  * Created by p.mazhnik on 15.05.2019.
@@ -42,6 +43,54 @@ public class Payload {
         this.content = content;
         this.bankInfoTypeId = bankInfoTypeId;
         this.typeId = typeId;
+    }
+
+    public static class CreationDate {
+
+        @SerializedName("milliseconds")
+        @Expose
+        private long milliseconds;
+
+        public CreationDate() {
+        }
+
+        public CreationDate(long milliseconds) {
+            super();
+            this.milliseconds = milliseconds;
+        }
+
+        public long getMilliseconds() {
+            return milliseconds;
+        }
+
+        public void setMilliseconds(Integer milliseconds) {
+            this.milliseconds = milliseconds;
+        }
+
+    }
+
+    public static class LastModificationDate {
+
+        @SerializedName("milliseconds")
+        @Expose
+        private long milliseconds;
+
+        public LastModificationDate() {
+        }
+
+        public LastModificationDate(long milliseconds) {
+            super();
+            this.milliseconds = milliseconds;
+        }
+
+        public long getMilliseconds() {
+            return milliseconds;
+        }
+
+        public void setMilliseconds(Integer milliseconds) {
+            this.milliseconds = milliseconds;
+        }
+
     }
 
     public Title getTitle() {

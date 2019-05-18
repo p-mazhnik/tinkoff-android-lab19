@@ -5,7 +5,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.pavel.tinkoffnews.local.entity.NewsEntity;
+import com.pavel.tinkoffnews.model.Title;
 
 import java.util.List;
 
@@ -18,12 +18,12 @@ import io.reactivex.Flowable;
 
 @Dao
 public interface NewsDao {
-    @Query("SELECT * FROM " + NewsEntity.TABLE_NAME)
-    Flowable<List<NewsEntity>> getAllNews();
+    @Query("SELECT * FROM " + Title.TABLE_NAME)
+    Flowable<List<Title>> getAllNews();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertNewsList(List<NewsEntity> news_list);
+    public void insertNewsList(List<Title> news_list);
 
-    @Query("SELECT * FROM " + NewsEntity.TABLE_NAME + " WHERE " + NewsEntity.COLUMN_ID + " = :id")
-    Flowable<NewsEntity> getNewsItemById(long id);
+    @Query("SELECT * FROM " + Title.TABLE_NAME + " WHERE " + Title.COLUMN_ID + " = :id")
+    Flowable<Title> getNewsItemById(long id);
 }
