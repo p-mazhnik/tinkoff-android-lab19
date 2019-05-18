@@ -1,5 +1,7 @@
 package com.pavel.tinkoffnews.local;
 
+import com.pavel.tinkoffnews.local.relation.TitleWithContent;
+import com.pavel.tinkoffnews.model.Content;
 import com.pavel.tinkoffnews.model.Title;
 
 import java.util.List;
@@ -19,7 +21,7 @@ public class LocalRepository {
     private final Executor mExecutor = Executors.newFixedThreadPool(2);
 
     public Flowable<List<Title>> getAllNews(){
-        return mDatabase.mNewsDao().getAllNews();
+        return mDatabase.mNewsDao().getAllTitles();
     }
 
     public void insertNewsList(final List<Title> news_list){
@@ -31,8 +33,26 @@ public class LocalRepository {
         });
     }
 
-    public Flowable<Title> getNewsItemById(long id){
-        return mDatabase.mNewsDao().getNewsItemById(id);
+    public void insertTitleContent(final Content content){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDatabase.mNewsDao().insertTitleContent(content);
+            }
+        });
+    }
+
+    public Flowable<List<TitleWithContent>> getTitleContentById(String id){
+        return mDatabase.mNewsDao().getTitleContentById(id);
+    }
+
+    public void updateNewsItem(final Title title){
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mDatabase.mNewsDao().updateNewsItem(title);
+            }
+        });
     }
 
     private LocalRepository(AppDatabase database) {

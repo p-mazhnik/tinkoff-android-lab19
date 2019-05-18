@@ -6,6 +6,8 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.pavel.tinkoffnews.BasicApp;
 import com.pavel.tinkoffnews.local.LocalRepository;
+import com.pavel.tinkoffnews.local.relation.TitleWithContent;
+import com.pavel.tinkoffnews.model.Content;
 import com.pavel.tinkoffnews.remote.RemoteRepository;
 import com.pavel.tinkoffnews.remote.data.NewsListResponse;
 import com.pavel.tinkoffnews.remote.data.NewsItemResponse;
@@ -46,7 +48,15 @@ public class NewsViewModel extends AndroidViewModel {
         mLocalRepository.insertNewsList(news_list);
     }
 
-    public Flowable<Title> getLocalNewsContentById(long id){
-        return mLocalRepository.getNewsItemById(id);
+    public void insertTitleContent(Content content){
+        mLocalRepository.insertTitleContent(content);
+    }
+
+    public Flowable<List<TitleWithContent>> getLocalTitleContentById(String id){
+        return mLocalRepository.getTitleContentById(id);
+    }
+
+    public void updateNewsItem(final Title title){
+        mLocalRepository.updateNewsItem(title);
     }
 }

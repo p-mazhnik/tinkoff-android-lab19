@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase;
 import android.content.Context;
 
 import com.pavel.tinkoffnews.local.dao.NewsDao;
+import com.pavel.tinkoffnews.model.Content;
 import com.pavel.tinkoffnews.model.Title;
 
 
@@ -14,7 +15,7 @@ import com.pavel.tinkoffnews.model.Title;
  * to tinkoff-android-lab19
  */
 
-@Database(entities = {Title.class}, version = 1)
+@Database(entities = {Title.class, Content.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 

@@ -35,16 +35,14 @@ public class Title {
     private String text;
     @SerializedName("publicationDate")
     @Expose
-    @Embedded(prefix = "pbdate_")
+    @Embedded
     private PublicationDate publicationDate;
-    @ColumnInfo(name = Title.COLUMN_CONTENT)
-    private String content;
+
     @SerializedName("bankInfoTypeId")
     @Expose
     private long bankInfoTypeId;
 
-    public Title(String id, String name, String text, PublicationDate publicationDate, long bankInfoTypeId) {
-        super();
+    public Title(@NonNull String id, String name, String text, PublicationDate publicationDate, long bankInfoTypeId) {
         this.id = id;
         this.name = name;
         this.text = text;
@@ -56,6 +54,7 @@ public class Title {
 
         @SerializedName("milliseconds")
         @Expose
+        @ColumnInfo(name = Title.COLUMN_PUB_DATE)
         private long milliseconds;
 
         public PublicationDate(long milliseconds) {
@@ -72,11 +71,12 @@ public class Title {
 
     }
 
+    @NonNull
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -104,15 +104,6 @@ public class Title {
         this.publicationDate = publicationDate;
     }
 
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public long getBankInfoTypeId() {
         return bankInfoTypeId;
     }
@@ -129,8 +120,6 @@ public class Title {
     public static final String COLUMN_TEXT = "text";
     @Ignore
     public static final String COLUMN_NAME = "name";
-    @Ignore
-    public static final String COLUMN_CONTENT = "content";
     @Ignore
     public static final String COLUMN_PUB_DATE = "pub_date";
 

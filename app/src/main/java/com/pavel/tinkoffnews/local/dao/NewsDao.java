@@ -4,7 +4,11 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
+import androidx.room.Update;
 
+import com.pavel.tinkoffnews.local.relation.TitleWithContent;
+import com.pavel.tinkoffnews.model.Content;
 import com.pavel.tinkoffnews.model.Title;
 
 import java.util.List;
@@ -19,11 +23,21 @@ import io.reactivex.Flowable;
 @Dao
 public interface NewsDao {
     @Query("SELECT * FROM " + Title.TABLE_NAME)
-    Flowable<List<Title>> getAllNews();
+    Flowable<List<Title>> getAllTitles();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public void insertNewsList(List<Title> news_list);
+    void insertNewsList(List<Title> news_list);
 
-    @Query("SELECT * FROM " + Title.TABLE_NAME + " WHERE " + Title.COLUMN_ID + " = :id")
-    Flowable<Title> getNewsItemById(long id);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertTitleContent(Content content);
+
+    @Transaction
+    @Query("SELECT * FROM " + Title.TABLE_NAME +
+            " INNER JOIN " + Content.TABLE_NAME +
+            " ON " + Title.TABLE_NAME + "." + Title.COLUMN_ID + " = " + Content.TABLE_NAME + "." + Content.COLUMN_TITLE_ID +
+            "  WHERE " + Content.COLUMN_TITLE_ID + " = :id")
+    Flowable<List<TitleWithContent>> getTitleContentById(String id);
+
+    @Update
+    void updateNewsItem(Title title);
 }

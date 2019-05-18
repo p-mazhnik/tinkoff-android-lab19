@@ -9,11 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.pavel.tinkoffnews.remote.data.NewsListResponse;
 import com.pavel.tinkoffnews.model.Title;
@@ -32,8 +34,9 @@ import io.reactivex.schedulers.Schedulers;
  * to tinkoff-android-lab19
  */
 
-public class NewsListFragment extends Fragment {
+public class NewsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private NewsViewModel mViewModel;
     private NewsListAdapter mNewsListAdapter;
 
@@ -49,6 +52,14 @@ public class NewsListFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.news_list);
         mNewsListAdapter = new NewsListAdapter();
         recyclerView.setAdapter(mNewsListAdapter);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.news_list_swipe);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
         return v;
     }
 
@@ -57,7 +68,6 @@ public class NewsListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(NewsViewModel.class);
-        load_remote_data();
         mViewModel.getLocalNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -74,8 +84,18 @@ public class NewsListFragment extends Fragment {
                                 }
                             });
                             mNewsListAdapter.setNewsList(response);
+                            mSwipeRefreshLayout.setRefreshing(false);
                         } else {
                             Log.e("NewsListFragment", "response is null");
+
+                            mSwipeRefreshLayout.post(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    // Fetching data from server
+                                    load_remote_data();
+                                }
+                            });
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -86,8 +106,15 @@ public class NewsListFragment extends Fragment {
                 });
     }
 
+    @Override
+    public void onRefresh() {
+        // Fetching data from server
+        load_remote_data();
+    }
+
     @SuppressLint("CheckResult")
-    public void load_remote_data(){
+    private void load_remote_data(){
+        mSwipeRefreshLayout.setRefreshing(true);
         mViewModel.getRemoteNews()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -99,12 +126,16 @@ public class NewsListFragment extends Fragment {
                             mViewModel.insertNewsList(titles);
                         } else {
                             Log.e("NewsListFragment", "response is null");
+                            mSwipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(getContext(), "Update failed", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
                         Log.e("NewsListFragment", "exception insert data: " + throwable.getMessage());
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getContext(), "Update failed", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
